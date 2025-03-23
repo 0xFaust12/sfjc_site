@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="San Francisco Journal Club" />
+        <title>San Francisco Journal Club</title>
+        <style>
+            :root {
+                --bloomberg-orange: #ff8000;
+                --bloomberg-black: #000000;
+                --bloomberg-white: #ffffff;
+                --bloomberg-dark-blue: #1a1e3a;
+            }
+
+            body {
+                max-width: 700px;
+                margin: 20vh auto;
+                padding: 0 20px;
+                font-family: monospace;
+                line-height: 1.6em;
+                background-color: var(--bloomberg-orange);
+                color: var(--bloomberg-white);
+                user-select: none;
+                font-size: 16px;
+            }
+
+            h2 {
+                font-size: 28px;
+                font-weight: bold;
+                margin-bottom: 5px;
+                border-bottom: 4px solid var(--bloomberg-white);
+                padding-bottom: 8px;
+                color: var(--bloomberg-white);
+            }
+
+            h3 {
+                font-size: 18px;
+                font-weight: bold;
+                margin-top: 30px;
+                margin-bottom: 10px;
+                color: var(--bloomberg-dark-blue);
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            a {
+                color: var(--bloomberg-dark-blue);
+                text-decoration: none;
+                user-select: text;
+                font-weight: bold;
+                transition: color 0.2s;
+            }
+
+            a:hover {
+                text-decoration: underline;
+                color: var(--bloomberg-white);
+            }
+
+            .thread {
+                color: var(--bloomberg-white);
+                text-decoration: none;
+            }
+
+            .thread:hover {
+                text-decoration: underline;
+            }
+
+            p:not(:nth-child(2)) {
+                margin-top: 20px;
+            }
+
+            p:nth-child(2) {
+                margin-top: 0px;
+            }
+
+            ul {
+                padding-left: 20px;
+            }
+
+            li {
+                margin-bottom: 8px;
+                position: relative;
+            }
+
+            li::before {
+                content: "•";
+                color: var(--bloomberg-dark-blue);
+                font-weight: bold;
+                display: inline-block;
+                width: 1em;
+                margin-left: -1em;
+            }
+
+            footer {
+                position: relative;
+                margin-top: 60px;
+                padding: 20px 0;
+                border-top: 1px solid var(--bloomberg-white);
+                text-align: center;
+                font-style: italic;
+                color: var(--bloomberg-white);
+            }
+
+            footer hr {
+                display: none;
+            }
+
+            @media (max-width: 768px) {
+                body {
+                    margin: 10vh auto;
+                }
+
+                h2 {
+                    font-size: 24px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <h2>San Francisco Journal Club</h2>
+            <p></p>
+            <p>
+                founded by: <a href="https://x.com/0xL1ghts">teev</a> &
+                <a href="https://x.com/0xFaust12">0xFaust</a>
+                <br />
+                <a href="mailto:sfjournalclub@protonmail.com"
+                    >sfjournalclub@protonmail.com</a
+                >
+            </p>
+            <p>
+                invite-only club centered around discussion and study of
+                math/stats/cs/quantitative finance textbooks and journals.
+                meetings are held bi-weekly in san francisco.
+            </p>
+            <h3>Current Reading List:</h3>
+            <ul>
+                <li>all of statistics- wasserman</li>
+                <li>
+                    numerical recipes in c- teuukolsky, vetterling, flannery
+                </li>
+                <li>handbook of price impact modeling- webster</li>
+            </ul>
+            <p></p>
+            <h3>Events:</h3>
+            &gt; coming soon
+            <footer>
+                <p>
+                    <i
+                        >"the applications of knowledge, especially mathematics,
+                        reveal the unity of all knowledge. in a new situation
+                        almost anything and everything you ever learned might be
+                        applicable, and the artificial divisions seem to
+                        vanish."- hamming</i
+                    >
+                </p>
+            </footer>
+        </main>
+    </body>
+</html>
