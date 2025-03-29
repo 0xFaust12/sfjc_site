@@ -7,10 +7,38 @@
         <title>San Francisco Journal Club</title>
         <style>
             :root {
-                --bloomberg-orange: #ff8000;
-                --bloomberg-black: #000000;
-                --bloomberg-white: #ffffff;
-                --bloomberg-dark-blue: #1a1e3a;
+                --site-black: #000000;
+                --site-white: #ffffff;
+                --site-gray: #333333;
+                --site-light-gray: #888888;
+                --site-accent: #444444;
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            #network-bg {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: -1;
+                overflow: hidden;
+                background-color: var(--site-white);
+            }
+            
+            #network-canvas {
+                width: 100%;
+                height: 100%;
+                display: block;
+            }
+            
+            main {
+                padding: 0;
             }
 
             body {
@@ -19,19 +47,20 @@
                 padding: 0 20px;
                 font-family: monospace;
                 line-height: 1.6em;
-                background-color: var(--bloomberg-orange);
-                color: var(--bloomberg-white);
+                color: var(--site-black);
                 user-select: none;
                 font-size: 16px;
+                position: relative;
+                z-index: 1;
             }
 
             h2 {
                 font-size: 28px;
                 font-weight: bold;
-                margin-bottom: 5px;
-                border-bottom: 4px solid var(--bloomberg-white);
+                margin-bottom: 15px;
+                border-bottom: 2px solid var(--site-black);
                 padding-bottom: 8px;
-                color: var(--bloomberg-white);
+                color: var(--site-black);
             }
 
             h3 {
@@ -39,13 +68,13 @@
                 font-weight: bold;
                 margin-top: 30px;
                 margin-bottom: 10px;
-                color: var(--bloomberg-dark-blue);
+                color: var(--site-black);
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
             }
 
             a {
-                color: var(--bloomberg-dark-blue);
+                color: var(--site-gray);
                 text-decoration: none;
                 user-select: text;
                 font-weight: bold;
@@ -54,11 +83,11 @@
 
             a:hover {
                 text-decoration: underline;
-                color: var(--bloomberg-white);
+                color: var(--site-black);
             }
 
             .thread {
-                color: var(--bloomberg-white);
+                color: var(--site-black);
                 text-decoration: none;
             }
 
@@ -85,7 +114,7 @@
 
             li::before {
                 content: "•";
-                color: var(--bloomberg-dark-blue);
+                color: var(--site-black);
                 font-weight: bold;
                 display: inline-block;
                 width: 1em;
@@ -96,10 +125,10 @@
                 position: relative;
                 margin-top: 60px;
                 padding: 20px 0;
-                border-top: 1px solid var(--bloomberg-white);
+                border-top: 1px solid rgba(0, 0, 0, 0.2);
                 text-align: center;
                 font-style: italic;
-                color: var(--bloomberg-white);
+                color: var(--site-gray);
             }
 
             footer hr {
@@ -116,8 +145,145 @@
                 }
             }
         </style>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const canvas = document.getElementById('network-canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Set canvas dimensions to match window
+                function resizeCanvas() {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                }
+                
+                // Initialize nodes and connections
+                let nodes = [];
+                let mouse = { x: undefined, y: undefined, radius: 150 };
+                const nodeCount = 60;
+                const connectionDistance = 150;
+                const nodeSize = 2;
+                const nodeSizes = [2, 2.5, 3.5];
+                
+                // Track mouse position
+                canvas.addEventListener('mousemove', function(event) {
+                    mouse.x = event.x;
+                    mouse.y = event.y;
+                });
+                
+                // Mouse leaves canvas
+                canvas.addEventListener('mouseout', function() {
+                    mouse.x = undefined;
+                    mouse.y = undefined;
+                });
+                
+                function initNodes() {
+                    nodes = [];
+                    for (let i = 0; i < nodeCount; i++) {
+                        const size = nodeSizes[Math.floor(Math.random() * nodeSizes.length)];
+                        nodes.push({
+                            x: Math.random() * canvas.width,
+                            y: Math.random() * canvas.height,
+                            vx: (Math.random() - 0.5) * 0.3,
+                            vy: (Math.random() - 0.5) * 0.3,
+                            size: size,
+                            color: 'rgba(180, 180, 180, 0.9)'
+                        });
+                    }
+                }
+                
+                function drawNetwork() {
+                    // Clear canvas
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Draw connections first (so they appear behind nodes)
+                    for (let i = 0; i < nodes.length; i++) {
+                        for (let j = i + 1; j < nodes.length; j++) {
+                            const dx = nodes[i].x - nodes[j].x;
+                            const dy = nodes[i].y - nodes[j].y;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+                            
+                            if (distance < connectionDistance) {
+                                const opacity = 1 - (distance / connectionDistance);
+                                ctx.strokeStyle = `rgba(180, 180, 180, ${opacity * 0.5})`;
+                                ctx.lineWidth = 0.7;
+                                ctx.beginPath();
+                                ctx.moveTo(nodes[i].x, nodes[i].y);
+                                ctx.lineTo(nodes[j].x, nodes[j].y);
+                                ctx.stroke();
+                            }
+                        }
+                    }
+                    
+                    // Update and draw nodes
+                    nodes.forEach(node => {
+                        // Mouse interaction
+                        if (mouse.x !== undefined && mouse.y !== undefined) {
+                            const dx = node.x - mouse.x;
+                            const dy = node.y - mouse.y;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+                            
+                            // Apply subtle force away from mouse
+                            if (distance < mouse.radius) {
+                                const force = (mouse.radius - distance) / mouse.radius;
+                                const directionX = dx / distance || 0;
+                                const directionY = dy / distance || 0;
+                                node.vx += directionX * force * 0.2;
+                                node.vy += directionY * force * 0.2;
+                            }
+                        }
+                        
+                        // Apply slight movement to all nodes
+                        node.vx += (Math.random() - 0.5) * 0.01;
+                        node.vy += (Math.random() - 0.5) * 0.01;
+                        
+                        // Limit velocity
+                        const speed = Math.sqrt(node.vx * node.vx + node.vy * node.vy);
+                        if (speed > 1.5) {
+                            node.vx = (node.vx / speed) * 1.5;
+                            node.vy = (node.vy / speed) * 1.5;
+                        }
+                        
+                        // Update position
+                        node.x += node.vx;
+                        node.y += node.vy;
+                        
+                        // Bounce off edges
+                        if (node.x <= node.size || node.x >= canvas.width - node.size) {
+                            node.vx *= -0.9;
+                            node.x = node.x <= node.size ? node.size : canvas.width - node.size;
+                        }
+                        if (node.y <= node.size || node.y >= canvas.height - node.size) {
+                            node.vy *= -0.9;
+                            node.y = node.y <= node.size ? node.size : canvas.height - node.size;
+                        }
+                        
+                        // Draw node
+                        ctx.beginPath();
+                        ctx.arc(node.x, node.y, node.size, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(180, 180, 180, 0.9)';
+                        ctx.fill();
+                    });
+                    
+                    requestAnimationFrame(drawNetwork);
+                }
+                
+                // Handle window resize
+                window.addEventListener('resize', function() {
+                    resizeCanvas();
+                    initNodes();
+                });
+                
+                // Initialize
+                resizeCanvas();
+                initNodes();
+                drawNetwork();
+            });
+        </script>
     </head>
     <body>
+        <div id="network-bg">
+            <canvas id="network-canvas"></canvas>
+        </div>
         <main>
             <h2>San Francisco Journal Club</h2>
             <p></p>
